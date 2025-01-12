@@ -1,44 +1,23 @@
-import asyncHandler from 'express-async-handler';
-
-// @desc    Auth user & get token
-// @route   POST /api/users/auth
-// @access  Public
-const authUser = asyncHandler(async (req, res) => {
-  res.send('auth user');
-});
-
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
-const registerUser = asyncHandler(async (req, res) => {
-  res.send('register user');
-});
-
-// @desc    Logout user / clear cookie
-// @route   POST /api/users/logout
-// @access  Public
-const logoutUser = (req, res) => {
-  res.send('logout user');
-};
-
-// @desc    Get user profile
-// @route   GET /api/users/profile
-// @access  Private
-const getUserProfile = asyncHandler(async (req, res) => {
-  res.send('get profile');
-});
-
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  res.send('update profile');
-});
+  const user = await User.findById(req.user._id);
 
-export {
-  authUser,
-  registerUser,
-  logoutUser,
-  getUserProfile,
-  updateUserProfile,
-};
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});

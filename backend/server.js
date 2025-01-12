@@ -1,6 +1,10 @@
 const express = require("express");
 const port = 5000;
+import { protect } from '../middleware/authMiddleware.js';
 
+router
+  .route('/profile')
+  .get(protect, getUserProfile)
 const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
